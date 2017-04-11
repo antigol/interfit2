@@ -29,6 +29,10 @@ qreal Function::y(qreal x)
 
 bool Function::domain(qreal x) const
 {
+    if (parameters.deposition_rate < 0.0) return false;
+    if (parameters.substrate_index < 0.0) return false;
+    if (parameters.layer_index < 0.0) return false;
+
     double thickness = parameters.deposition_rate * (x + parameters.time_offset);
     return thickness >= 0;
 }

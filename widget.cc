@@ -14,11 +14,37 @@ Widget::Widget(QWidget *parent) :
     _scene->addScatterplot(_pointlist);
 
     connect(ui->lockin_sig, SIGNAL(newValues()), this, SLOT(getValues()));
+
+    _metropolis = nullptr;
+
+    QList<QLineEdit*> mus;
+    mus << ui->lineEdit_substrate_index << ui->lineEdit_layer_index
+        << ui->lineEdit_angle << ui->lineEdit_polarization
+        << ui->lineEdit_deposition_rate << ui->lineEdit_time_offset
+        << ui->lineEdit_global_factor;
+    QList<QLineEdit*> sigmas;
+    sigmas << ui->lineEdit_std_substrate_index << ui->lineEdit_std_layer_index
+           << ui->lineEdit_std_angle << ui->lineEdit_std_polarization
+           << ui->lineEdit_std_deposition_rate << ui->lineEdit_std_time_offset
+           << ui->lineEdit_std_global_factor;
+
+    for (int j = 0; j < mus.size(); ++j) {
+        connect(mus[j], SIGNAL(textChanged(QString)), this, SLOT(onPriorChanged()));
+        connect(sigmas[j], SIGNAL(textChanged(QString)), this, SLOT(onPriorChanged()));
+    }
+    connect(ui->pushButton, SIGNAL(clicked(bool)), this, SLOT(onPriorChanged()));
+
+    onPriorChanged();
 }
 
 Widget::~Widget()
 {
     delete ui;
+    if (_metropolis) {
+        _metropolis->run_flag = false;
+        _metropolis->wait(1000);
+        delete _metropolis;
+    }
     delete _pointlist;
 }
 
@@ -28,16 +54,81 @@ void Widget::getValues()
     const QList<QPointF>& ref = ui->lockin_ref->values();
 
     qreal offset = ui->lockin_ref->start_time().msecsTo(ui->lockin_sig->start_time()) / 1000.0;
-    qDebug() << "offset = " << offset;
 
+    if (_metropolis) _metropolis->mutex.lock();
     _pointlist->clear();
 
     for (int i = 0; i < sig.size(); ++i) {
         qreal interp = interpolate(ref, sig[i].x() + offset);
         _pointlist->append(QPointF(sig[i].x(), sig[i].y() / interp));
     }
+    if (_metropolis) _metropolis->mutex.unlock();
 
     _scene->regraph();
+
+    if (_metropolis) {
+        Function* f = _metropolis->ground_function();
+
+        QList<QLabel*> labels;
+        labels << ui->label_substrate_index << ui->label_layer_index
+            << ui->label_angle << ui->label_polarization
+            << ui->label_deposition_rate << ui->label_time_offset
+            << ui->label_global_factor;
+
+        for (int j = 0; j < NPARAM; ++j) {
+            labels[j]->setText(QString::number(f->parameters_[j]));
+        }
+    }
+}
+
+void Widget::onPriorChanged()
+{
+//    double substrate_index;
+//    double layer_index;
+//    double angle;
+//    double polarization;
+//    double deposition_rate;
+//    double time_offset;
+//    double global_factor;
+
+    QList<QLineEdit*> mus;
+    mus << ui->lineEdit_substrate_index << ui->lineEdit_layer_index
+        << ui->lineEdit_angle << ui->lineEdit_polarization
+        << ui->lineEdit_deposition_rate << ui->lineEdit_time_offset
+        << ui->lineEdit_global_factor;
+    QList<QLineEdit*> sigmas;
+    sigmas << ui->lineEdit_std_substrate_index << ui->lineEdit_std_layer_index
+           << ui->lineEdit_std_angle << ui->lineEdit_std_polarization
+           << ui->lineEdit_std_deposition_rate << ui->lineEdit_std_time_offset
+           << ui->lineEdit_std_global_factor;
+
+    if (_metropolis != nullptr) {
+        _scene->getFunctionsList().clear();
+        _metropolis->run_flag = false;
+        _metropolis->wait(1000);
+        delete _metropolis;
+        _metropolis = nullptr;
+    }
+
+    _metropolis = new Metropolis();
+    for (int j = 0; j < NPARAM; ++j) {
+        bool ok;
+        _metropolis->mu_[j] = mus[j]->text().toDouble(&ok);
+        if (!ok) {
+            delete _metropolis;
+            _metropolis = nullptr;
+            return;
+        }
+        _metropolis->sigma_[j] = sigmas[j]->text().toDouble(&ok);
+        if (!ok) {
+            delete _metropolis;
+            _metropolis = nullptr;
+            return;
+        }
+    }
+    _metropolis->data = _pointlist;
+    _metropolis->start(QThread::IdlePriority);
+    _scene->addFunction(_metropolis->ground_function());
 }
 
 qreal Widget::interpolate(const QList<QPointF> &xys, qreal x)
@@ -55,3 +146,4 @@ qreal Widget::interpolate(const QList<QPointF> &xys, qreal x)
     }
     return 0.0;
 }
+

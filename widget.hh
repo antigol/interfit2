@@ -3,6 +3,7 @@
 
 #include <QWidget>
 #include "lockin2/xygraph/xyscene.hh"
+#include "metropolis.h"
 
 namespace Ui {
 class Widget;
@@ -18,6 +19,7 @@ public:
 
 private slots:
     void getValues();
+    void onPriorChanged();
 
 private:
     qreal interpolate(const QList<QPointF>& xys, qreal x);
@@ -26,6 +28,8 @@ private:
 
     XYScene* _scene;
     XYPointList* _pointlist;
+
+    Metropolis* _metropolis;
 };
 
 #endif // WIDGET_HH

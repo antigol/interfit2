@@ -1,10 +1,12 @@
 #ifndef METROPOLIS_H
 #define METROPOLIS_H
 
+#include <QObject>
 #include "function.h"
 #include <QList>
 #include <QPointF>
 #include <QThread>
+#include <QMutex>
 
 class Metropolis : public QThread
 {
@@ -12,6 +14,9 @@ class Metropolis : public QThread
 
 public:
     Metropolis();
+    virtual ~Metropolis();
+
+    Function* ground_function();
 
     // Data
     QList<QPointF>* data;
@@ -28,10 +33,12 @@ public:
 
     bool run_flag;
 
-private:
-    void run() override;
+    QMutex mutex;
 
-    double residues(const Function& f) const;
+private:
+    virtual void run() override;
+
+    double residues(Function &f);
 
     double temperature0;
     double factor_temperature;

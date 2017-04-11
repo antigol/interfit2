@@ -3,6 +3,8 @@
 
 #include "lockin2/xygraph/xyscene.hh"
 
+#define NPARAM 7
+
 struct Parameters {
     double substrate_index;
     double layer_index;
