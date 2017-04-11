@@ -18,10 +18,14 @@ SOURCES += \
     lockin2/src/fifo.cc \
     lockin2/src/audioutils.cc \
     lockin2/xygraph/xyview.cc \
-    lockin2/xygraph/xyscene.cc
+    lockin2/xygraph/xyscene.cc \
+    widget.cc \
+    function.cpp \
+    metropolis.cpp
 
 FORMS += \
-    lockin2/src/lockin_gui.ui
+    lockin2/src/lockin_gui.ui \
+    widget.ui
 
 HEADERS += \
     lockin2/src/lockin_gui.hh \
@@ -29,4 +33,7 @@ HEADERS += \
     lockin2/src/fifo.hh \
     lockin2/src/audioutils.hh \
     lockin2/xygraph/xyview.hh \
-    lockin2/xygraph/xyscene.hh
+    lockin2/xygraph/xyscene.hh \
+    widget.hh \
+    function.h \
+    metropolis.h
