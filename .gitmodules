@@ -1,6 +1,6 @@
 [submodule "lockin2"]
 	path = lockin2
-	url = https://github.com:antigol/lockin2.git
+	url = https://github.com/antigol/lockin2.git
 [submodule "thinfilm"]
 	path = thinfilm
 	url = https://github.com/antigol/thinfilm.git

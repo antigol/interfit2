@@ -10,14 +10,14 @@ std::mt19937& generator() {
 
 Metropolis::Metropolis()
 {
-    temperature0 = 1e-3;
+    temperature0 = 1e-6;
     factor_temperature = 1.7;
 
     // temperature_i = factor_temperature^i * temperature0
 
     for (int i = 0; i < 15; ++i) {
         Function p;
-        p.setPen(QPen(QBrush(Qt::red), 2.0));
+        p.setPen(QPen(QBrush(Qt::red), 3.0));
         walkers.append(p);
     }
 

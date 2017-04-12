@@ -1,10 +1,11 @@
-#include "widget.hh"
-#include "ui_widget.h"
+#include "mainwindow.h"
+#include "ui_mainwindow.h"
+#include <QFileDialog>
 #include <QDebug>
 
-Widget::Widget(QWidget *parent) :
-    QWidget(parent),
-    ui(new Ui::Widget)
+MainWindow::MainWindow(QWidget *parent) :
+    QMainWindow(parent),
+    ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
 
@@ -13,7 +14,7 @@ Widget::Widget(QWidget *parent) :
     _pointlist = new XYPointList(QPen(), QBrush(), 2.0, QPen(QBrush(Qt::white), 2.0));
     _scene->addScatterplot(_pointlist);
 
-    connect(ui->lockin_sig, SIGNAL(newValues()), this, SLOT(getValues()));
+    connect(ui->lockin_sig, SIGNAL(newValues()), this, SLOT(onValuesRecieved()));
 
     _metropolis = nullptr;
 
@@ -35,9 +36,11 @@ Widget::Widget(QWidget *parent) :
     connect(ui->pushButton, SIGNAL(clicked(bool)), this, SLOT(onPriorChanged()));
 
     onPriorChanged();
+
+    startTimer(100);
 }
 
-Widget::~Widget()
+MainWindow::~MainWindow()
 {
     delete ui;
     if (_metropolis) {
@@ -48,7 +51,7 @@ Widget::~Widget()
     delete _pointlist;
 }
 
-void Widget::getValues()
+void MainWindow::onValuesRecieved()
 {
     const QList<QPointF>& sig = ui->lockin_sig->values();
     const QList<QPointF>& ref = ui->lockin_ref->values();
@@ -65,31 +68,17 @@ void Widget::getValues()
     if (_metropolis) _metropolis->mutex.unlock();
 
     _scene->regraph();
-
-    if (_metropolis) {
-        Function* f = _metropolis->ground_function();
-
-        QList<QLabel*> labels;
-        labels << ui->label_substrate_index << ui->label_layer_index
-            << ui->label_angle << ui->label_polarization
-            << ui->label_deposition_rate << ui->label_time_offset
-            << ui->label_global_factor;
-
-        for (int j = 0; j < NPARAM; ++j) {
-            labels[j]->setText(QString::number(f->parameters_[j]));
-        }
-    }
 }
 
-void Widget::onPriorChanged()
+void MainWindow::onPriorChanged()
 {
-//    double substrate_index;
-//    double layer_index;
-//    double angle;
-//    double polarization;
-//    double deposition_rate;
-//    double time_offset;
-//    double global_factor;
+    //    double substrate_index;
+    //    double layer_index;
+    //    double angle;
+    //    double polarization;
+    //    double deposition_rate;
+    //    double time_offset;
+    //    double global_factor;
 
     QList<QLineEdit*> mus;
     mus << ui->lineEdit_substrate_index << ui->lineEdit_layer_index
@@ -131,7 +120,7 @@ void Widget::onPriorChanged()
     _scene->addFunction(_metropolis->ground_function());
 }
 
-qreal Widget::interpolate(const QList<QPointF> &xys, qreal x)
+qreal MainWindow::interpolate(const QList<QPointF> &xys, qreal x)
 {
     // assume xys ordered in x's
 
@@ -147,3 +136,46 @@ qreal Widget::interpolate(const QList<QPointF> &xys, qreal x)
     return 0.0;
 }
 
+void MainWindow::timerEvent(QTimerEvent *event)
+{
+    Q_UNUSED(event);
+
+    if (_metropolis) {
+        Function* f = _metropolis->ground_function();
+
+        QList<QLabel*> labels;
+        labels << ui->label_substrate_index << ui->label_layer_index
+            << ui->label_angle << ui->label_polarization
+            << ui->label_deposition_rate << ui->label_time_offset
+            << ui->label_global_factor;
+
+        for (int j = 0; j < NPARAM; ++j) {
+            labels[j]->setText(QString::number(f->parameters_[j]));
+        }
+
+        qDebug() << f->domain(100);
+        qDebug() << f->y(100);
+
+        _scene->regraph();
+    }
+}
+
+void MainWindow::on_actionOpen_triggered()
+{
+    QString fileName = QFileDialog::getOpenFileName(this);
+
+    if (fileName.isEmpty()) return;
+
+    QFile file(fileName);
+    file.open(QIODevice::ReadOnly);
+    QByteArray content = file.readAll();
+    QList<QByteArray> lines = content.split('\n');
+
+    _pointlist->clear();
+    for (int i = 0; i < lines.size(); ++i) {
+        if (lines[i].contains('#')) continue;
+        QList<QByteArray> rows = lines[i].simplified().split(' ');
+        if (rows.size() != 2) continue;
+        _pointlist->append(QPointF(rows[0].toDouble(), rows[1].toDouble()));
+    }
+}
