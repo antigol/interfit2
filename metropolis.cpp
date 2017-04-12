@@ -1,6 +1,7 @@
 #include "metropolis.h"
 #include <random>
 #include <QDebug>
+#include <QTime>
 
 std::mt19937& generator() {
     static std::random_device rd;
@@ -32,7 +33,10 @@ Metropolis::Metropolis()
 
 Metropolis::~Metropolis()
 {
-
+    if (isRunning()) {
+        run_flag = false;
+        wait(1000);
+    }
 }
 
 Function *Metropolis::ground_function()
@@ -74,8 +78,12 @@ void Metropolis::run()
     }
 
     while (run_flag) {
+        msleep(5);
+        QTime time;
+        time.start();
+
         // metropolis-hastings
-        for (int k = 0; k < 10; ++k) {
+        for (int k = 0; k < 50; ++k) {
             for (int i = 0; i < walkers.size(); ++i) {
                 Function candidate = walkers[i];
                 for (int j = 0; j < NPARAM; ++j) {
@@ -105,21 +113,25 @@ void Metropolis::run()
             }
         }
 
-        for (int i = 1; i < walkers.size(); ++i) {
-            double E1 = walkers_res[i-1];
-            double E0 = walkers_res[i];
+        for (int k = 0; k < 5; ++k) {
+            for (int i = 1; i < walkers.size(); ++i) {
+                double E1 = walkers_res[i-1];
+                double E0 = walkers_res[i];
 
-            // 1 / (q^i T0) - 1 / (q^(i-1) T0) = (1 - q) / (q^i T0)
-            double lnprob = (1.0 - factor_temperature) / (std::pow(factor_temperature, i) * data->size() * temperature0) * (E1 - E0);
+                // 1 / (q^i T0) - 1 / (q^(i-1) T0) = (1 - q) / (q^i T0)
+                double lnprob = (1.0 - factor_temperature) / (std::pow(factor_temperature, i) * data->size() * temperature0) * (E1 - E0);
 
-            // rand < proba   <=> log(rand) < log(proba)
-            if (std::log(std::generate_canonical<double, std::numeric_limits<double>::digits>(generator())) < lnprob) {
-                std::swap(walkers[i], walkers[i-1]);
-                std::swap(walkers_res[i], walkers_res[i-1]);
+                // rand < proba   <=> log(rand) < log(proba)
+                if (std::log(std::generate_canonical<double, std::numeric_limits<double>::digits>(generator())) < lnprob) {
+                    std::swap(walkers[i], walkers[i-1]);
+                    std::swap(walkers_res[i], walkers_res[i-1]);
 
-                //                qDebug() << "SWAP " << i;
+                    //                qDebug() << "SWAP " << i;
+                }
             }
         }
+
+//        qDebug() << time.elapsed();
     }
 }
 

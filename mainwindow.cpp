@@ -18,6 +18,32 @@ MainWindow::MainWindow(QWidget *parent) :
 
     _metropolis = nullptr;
 
+    startTimer(100);
+}
+
+MainWindow::~MainWindow()
+{
+    delete ui;
+    if (_metropolis) {
+        delete _metropolis;
+    }
+    delete _pointlist;
+}
+
+//    double substrate_index;
+//    double layer_index;
+//    double angle;
+//    double polarization;
+//    double deposition_rate;
+//    double time_offset;
+//    double global_factor;
+
+void MainWindow::start_metropolis()
+{
+    if (_metropolis != nullptr) {
+        stop_metropolis();
+    }
+
     QList<QLineEdit*> mus;
     mus << ui->lineEdit_substrate_index << ui->lineEdit_layer_index
         << ui->lineEdit_angle << ui->lineEdit_polarization
@@ -29,26 +55,36 @@ MainWindow::MainWindow(QWidget *parent) :
            << ui->lineEdit_std_deposition_rate << ui->lineEdit_std_time_offset
            << ui->lineEdit_std_global_factor;
 
-    for (int j = 0; j < mus.size(); ++j) {
-        connect(mus[j], SIGNAL(textChanged(QString)), this, SLOT(onPriorChanged()));
-        connect(sigmas[j], SIGNAL(textChanged(QString)), this, SLOT(onPriorChanged()));
+    _metropolis = new Metropolis();
+    for (int j = 0; j < NPARAM; ++j) {
+        bool ok;
+        _metropolis->mu_[j] = mus[j]->text().toDouble(&ok);
+        if (!ok) {
+            delete _metropolis;
+            _metropolis = nullptr;
+            return;
+        }
+        _metropolis->sigma_[j] = sigmas[j]->text().toDouble(&ok);
+        if (!ok) {
+            delete _metropolis;
+            _metropolis = nullptr;
+            return;
+        }
     }
-    connect(ui->pushButton, SIGNAL(clicked(bool)), this, SLOT(onPriorChanged()));
-
-    onPriorChanged();
-
-    startTimer(100);
+    _metropolis->data = _pointlist;
+    _metropolis->start(QThread::IdlePriority);
+    _scene->addFunction(_metropolis->ground_function());
 }
 
-MainWindow::~MainWindow()
+void MainWindow::stop_metropolis()
 {
-    delete ui;
-    if (_metropolis) {
+    if (_metropolis != nullptr) {
+        _scene->getFunctionsList().clear();
         _metropolis->run_flag = false;
         _metropolis->wait(1000);
         delete _metropolis;
+        _metropolis = nullptr;
     }
-    delete _pointlist;
 }
 
 void MainWindow::onValuesRecieved()
@@ -72,52 +108,7 @@ void MainWindow::onValuesRecieved()
 
 void MainWindow::onPriorChanged()
 {
-    //    double substrate_index;
-    //    double layer_index;
-    //    double angle;
-    //    double polarization;
-    //    double deposition_rate;
-    //    double time_offset;
-    //    double global_factor;
 
-    QList<QLineEdit*> mus;
-    mus << ui->lineEdit_substrate_index << ui->lineEdit_layer_index
-        << ui->lineEdit_angle << ui->lineEdit_polarization
-        << ui->lineEdit_deposition_rate << ui->lineEdit_time_offset
-        << ui->lineEdit_global_factor;
-    QList<QLineEdit*> sigmas;
-    sigmas << ui->lineEdit_std_substrate_index << ui->lineEdit_std_layer_index
-           << ui->lineEdit_std_angle << ui->lineEdit_std_polarization
-           << ui->lineEdit_std_deposition_rate << ui->lineEdit_std_time_offset
-           << ui->lineEdit_std_global_factor;
-
-    if (_metropolis != nullptr) {
-        _scene->getFunctionsList().clear();
-        _metropolis->run_flag = false;
-        _metropolis->wait(1000);
-        delete _metropolis;
-        _metropolis = nullptr;
-    }
-
-    _metropolis = new Metropolis();
-    for (int j = 0; j < NPARAM; ++j) {
-        bool ok;
-        _metropolis->mu_[j] = mus[j]->text().toDouble(&ok);
-        if (!ok) {
-            delete _metropolis;
-            _metropolis = nullptr;
-            return;
-        }
-        _metropolis->sigma_[j] = sigmas[j]->text().toDouble(&ok);
-        if (!ok) {
-            delete _metropolis;
-            _metropolis = nullptr;
-            return;
-        }
-    }
-    _metropolis->data = _pointlist;
-    _metropolis->start(QThread::IdlePriority);
-    _scene->addFunction(_metropolis->ground_function());
 }
 
 qreal MainWindow::interpolate(const QList<QPointF> &xys, qreal x)
@@ -153,8 +144,8 @@ void MainWindow::timerEvent(QTimerEvent *event)
             labels[j]->setText(QString::number(f->parameters_[j]));
         }
 
-        qDebug() << f->domain(100);
-        qDebug() << f->y(100);
+//        qDebug() << f->domain(100);
+//        qDebug() << f->y(100);
 
         _scene->regraph();
     }
@@ -179,3 +170,12 @@ void MainWindow::on_actionOpen_triggered()
         _pointlist->append(QPointF(rows[0].toDouble(), rows[1].toDouble()));
     }
 }
+
+void MainWindow::on_pushButton_start_fit_clicked() {
+    start_metropolis();
+}
+
+void MainWindow::on_pushButton_stop_fit_clicked() {
+    stop_metropolis();
+}
+

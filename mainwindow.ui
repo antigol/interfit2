@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>800</width>
-    <height>600</height>
+    <width>901</width>
+    <height>686</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -18,25 +18,13 @@
     <item>
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>1</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="tab">
        <attribute name="title">
         <string>Lockins</string>
        </attribute>
        <layout class="QHBoxLayout" name="horizontalLayout">
-        <item>
-         <widget class="QGroupBox" name="groupBox">
-          <property name="title">
-           <string>Reflexion (start it second)</string>
-          </property>
-          <layout class="QVBoxLayout" name="verticalLayout_3">
-           <item>
-            <widget class="LockinGui" name="lockin_sig" native="true"/>
-           </item>
-          </layout>
-         </widget>
-        </item>
         <item>
          <widget class="QGroupBox" name="groupBox_2">
           <property name="title">
@@ -45,6 +33,18 @@
           <layout class="QVBoxLayout" name="verticalLayout_4">
            <item>
             <widget class="LockinGui" name="lockin_ref" native="true"/>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item>
+         <widget class="QGroupBox" name="groupBox">
+          <property name="title">
+           <string>Reflexion (start it second)</string>
+          </property>
+          <layout class="QVBoxLayout" name="verticalLayout_3">
+           <item>
+            <widget class="LockinGui" name="lockin_sig" native="true"/>
            </item>
           </layout>
          </widget>
@@ -62,11 +62,22 @@
         <item>
          <layout class="QVBoxLayout" name="verticalLayout_2">
           <item>
-           <widget class="QPushButton" name="pushButton">
-            <property name="text">
-             <string>Restart fit</string>
-            </property>
-           </widget>
+           <layout class="QHBoxLayout" name="horizontalLayout_2">
+            <item>
+             <widget class="QPushButton" name="pushButton_start_fit">
+              <property name="text">
+               <string>(re)Start fit</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="pushButton_stop_fit">
+              <property name="text">
+               <string>Stop fit</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
           </item>
           <item>
            <widget class="QLabel" name="label_2">
@@ -100,7 +111,7 @@
             <item row="4" column="1">
              <widget class="QLineEdit" name="lineEdit_deposition_rate">
               <property name="text">
-               <string>1e-2</string>
+               <string>0.0001</string>
               </property>
              </widget>
             </item>
@@ -121,21 +132,21 @@
             <item row="0" column="2">
              <widget class="QLineEdit" name="lineEdit_std_substrate_index">
               <property name="text">
-               <string>10</string>
+               <string>2</string>
               </property>
              </widget>
             </item>
             <item row="1" column="2">
              <widget class="QLineEdit" name="lineEdit_std_layer_index">
               <property name="text">
-               <string>10</string>
+               <string>2</string>
               </property>
              </widget>
             </item>
             <item row="4" column="2">
              <widget class="QLineEdit" name="lineEdit_std_deposition_rate">
               <property name="text">
-               <string>1</string>
+               <string>0.0001</string>
               </property>
              </widget>
             </item>
@@ -198,7 +209,7 @@
             <item row="2" column="2">
              <widget class="QLineEdit" name="lineEdit_std_angle">
               <property name="text">
-               <string>45</string>
+               <string>20</string>
               </property>
              </widget>
             </item>
@@ -267,14 +278,14 @@
             <item row="6" column="1">
              <widget class="QLineEdit" name="lineEdit_global_factor">
               <property name="text">
-               <string>10</string>
+               <string>1</string>
               </property>
              </widget>
             </item>
             <item row="6" column="2">
              <widget class="QLineEdit" name="lineEdit_std_global_factor">
               <property name="text">
-               <string>100</string>
+               <string>2</string>
               </property>
              </widget>
             </item>
@@ -300,7 +311,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>800</width>
+     <width>901</width>
      <height>25</height>
     </rect>
    </property>

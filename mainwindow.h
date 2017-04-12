@@ -18,10 +18,15 @@ public:
     ~MainWindow();
 
 private slots:
+    void start_metropolis();
+    void stop_metropolis();
+
     void onValuesRecieved();
     void onPriorChanged();
 
     void on_actionOpen_triggered();
+    void on_pushButton_start_fit_clicked();
+    void on_pushButton_stop_fit_clicked();
 
 private:
     qreal interpolate(const QList<QPointF>& xys, qreal x);
