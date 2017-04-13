@@ -171,6 +171,8 @@ void MainWindow::on_actionOpen_triggered()
     QFile file(fileName);
     file.open(QIODevice::ReadOnly);
     QByteArray content = file.readAll();
+    file.close();
+
     QList<QByteArray> lines = content.split('\n');
 
     _pointlist->clear();
@@ -190,3 +192,22 @@ void MainWindow::on_pushButton_stop_fit_clicked() {
     stop_metropolis();
 }
 
+
+void MainWindow::on_actionSave_ratio_triggered()
+{
+    QString fileName = QFileDialog::getSaveFileName(this);
+
+    if (fileName.isEmpty()) return;
+
+    QFile file(fileName);
+    file.open(QIODevice::WriteOnly);
+    QByteArray content = "# time[sec] ratio[arbitraty]\n";
+    for (int i = 0; i < _pointlist->size(); ++i) {
+        double t = _pointlist->at(i).x();
+        double r = _pointlist->at(i).y();
+        content.append(QByteArray::number(t, 'g', 15) + " " + QByteArray::number(r, 'g', 15) + "\n");
+    }
+
+    file.write(content);
+    file.close();
+}
