@@ -26,7 +26,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     _scene = new XYScene(this);
     ui->graphicsView->setScene(_scene);
-    _pointlist = new XYPointList(QPen(), QBrush(), 2.0, QPen(QBrush(Qt::white), 2.0));
+    _pointlist = new XYPointList(QPen(), QBrush(), 0.0, QPen(QBrush(Qt::white), 2.0));
     _scene->addScatterplot(_pointlist);
 
     connect(ui->lockin_sig, SIGNAL(newValues()), this, SLOT(onValuesRecieved()));
