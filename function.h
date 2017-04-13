@@ -3,11 +3,13 @@
 
 #include "lockin2/xygraph/xyscene.hh"
 
-#define NPARAM 7
+#define NPARAM 9
 
 struct Parameters {
     double substrate_index;
+    double substrate_abs;
     double layer_index;
+    double layer_abs;
     double angle;
     double polarization;
     double deposition_rate;
@@ -25,7 +27,7 @@ public:
 
     union {
         Parameters parameters;
-        double parameters_[7];
+        double parameters_[NPARAM];
     };
 };
 

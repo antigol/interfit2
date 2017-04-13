@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include <QLineEdit>
+#include <QLabel>
 #include "lockin2/xygraph/xyscene.hh"
 #include "metropolis.h"
 
@@ -26,20 +27,18 @@ private slots:
     void onPriorChanged();
     void onMetropolisEvolved();
 
-    void on_actionOpen_triggered();
     void on_pushButton_start_fit_clicked();
     void on_pushButton_stop_fit_clicked();
-
+    void on_actionOpen_triggered();
     void on_actionSave_ratio_triggered();
 
 private:
     qreal interpolate(const QList<QPointF>& xys, qreal x);
 
-    void timerEvent(QTimerEvent* event) override;
-
     Ui::MainWindow *ui;
     QList<QLineEdit*> _mus;
     QList<QLineEdit*> _sigmas;
+    QList<QLabel*> _labels;
 
     XYScene* _scene;
     XYPointList* _pointlist;

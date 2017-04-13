@@ -16,7 +16,9 @@ public:
     Metropolis();
     virtual ~Metropolis();
 
+    void init_walkers();
     Function* ground_function();
+    Function* hot_function();
 
     // Data
     QList<QPointF>* data;
@@ -24,11 +26,11 @@ public:
     // Priors
     union {
         Parameters mu;
-        double mu_[7];
+        double mu_[NPARAM];
     };
     union {
         Parameters sigma;
-        double sigma_[7];
+        double sigma_[NPARAM];
     };
 
     bool run_flag;
@@ -42,9 +44,6 @@ private:
     virtual void run() override;
 
     double residues(Function &f);
-
-    double temperature0;
-    double factor_temperature;
 
     QList<Function> walkers; // parallel tempering
 };

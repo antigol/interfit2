@@ -17,10 +17,10 @@ qreal Function::y(qreal x)
     double transmittanceS = 0.0;
 
     std::vector<thinfilm::Layer> layers(1);
-    layers[0].refractiveIndex = parameters.layer_index;
+    layers[0].refractiveIndex = thinfilm::complex(parameters.layer_index, parameters.layer_abs);
     layers[0].thickness = thickness;
 
-    thinfilm::compute(cosTheta, 1.0, parameters.substrate_index, layers, &reflectanceP, &reflectanceS, &transmittanceP, &transmittanceS);
+    thinfilm::compute(cosTheta, 1.0, thinfilm::complex(parameters.substrate_index, parameters.substrate_abs), layers, &reflectanceP, &reflectanceS, &transmittanceP, &transmittanceS);
 
     double c = std::cos(parameters.polarization * M_PI / 180.0);
     double s = std::sin(parameters.polarization * M_PI / 180.0);

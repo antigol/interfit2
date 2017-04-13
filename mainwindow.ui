@@ -25,12 +25,36 @@
         <string>Lockins</string>
        </attribute>
        <layout class="QHBoxLayout" name="horizontalLayout">
+        <property name="leftMargin">
+         <number>2</number>
+        </property>
+        <property name="topMargin">
+         <number>2</number>
+        </property>
+        <property name="rightMargin">
+         <number>2</number>
+        </property>
+        <property name="bottomMargin">
+         <number>2</number>
+        </property>
         <item>
          <widget class="QGroupBox" name="groupBox_2">
           <property name="title">
            <string>Reference (start it first)</string>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_4">
+           <property name="leftMargin">
+            <number>1</number>
+           </property>
+           <property name="topMargin">
+            <number>1</number>
+           </property>
+           <property name="rightMargin">
+            <number>1</number>
+           </property>
+           <property name="bottomMargin">
+            <number>1</number>
+           </property>
            <item>
             <widget class="LockinGui" name="lockin_ref" native="true"/>
            </item>
@@ -43,6 +67,18 @@
            <string>Reflexion (start it second)</string>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_3">
+           <property name="leftMargin">
+            <number>1</number>
+           </property>
+           <property name="topMargin">
+            <number>1</number>
+           </property>
+           <property name="rightMargin">
+            <number>1</number>
+           </property>
+           <property name="bottomMargin">
+            <number>1</number>
+           </property>
            <item>
             <widget class="LockinGui" name="lockin_sig" native="true"/>
            </item>
@@ -94,21 +130,63 @@
           </item>
           <item>
            <layout class="QGridLayout" name="gridLayout">
-            <item row="3" column="2">
-             <widget class="QLineEdit" name="lineEdit_std_polarization">
+            <item row="2" column="2">
+             <widget class="QLineEdit" name="lineEdit_std_layer_index">
               <property name="text">
-               <string>360</string>
+               <string>0.1</string>
+              </property>
+             </widget>
+            </item>
+            <item row="6" column="2">
+             <widget class="QLineEdit" name="lineEdit_std_deposition_rate">
+              <property name="text">
+               <string>0.0001</string>
               </property>
              </widget>
             </item>
             <item row="5" column="0">
+             <widget class="QLabel" name="label_5">
+              <property name="text">
+               <string>Polarization</string>
+              </property>
+             </widget>
+            </item>
+            <item row="4" column="0">
+             <widget class="QLabel" name="label_4">
+              <property name="text">
+               <string>Angle of incidence</string>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="1">
+             <widget class="QLineEdit" name="lineEdit_layer_index">
+              <property name="text">
+               <string>1.4</string>
+              </property>
+             </widget>
+            </item>
+            <item row="4" column="1">
+             <widget class="QLineEdit" name="lineEdit_angle">
+              <property name="text">
+               <string>40</string>
+              </property>
+             </widget>
+            </item>
+            <item row="5" column="2">
+             <widget class="QLineEdit" name="lineEdit_std_polarization">
+              <property name="text">
+               <string>90</string>
+              </property>
+             </widget>
+            </item>
+            <item row="7" column="0">
              <widget class="QLabel" name="label_7">
               <property name="text">
                <string>Time offset</string>
               </property>
              </widget>
             </item>
-            <item row="4" column="1">
+            <item row="6" column="1">
              <widget class="QLineEdit" name="lineEdit_deposition_rate">
               <property name="text">
                <string>0.0001</string>
@@ -122,7 +200,7 @@
               </property>
              </widget>
             </item>
-            <item row="1" column="0">
+            <item row="2" column="0">
              <widget class="QLabel" name="label_3">
               <property name="text">
                <string>Layer index</string>
@@ -132,105 +210,70 @@
             <item row="0" column="2">
              <widget class="QLineEdit" name="lineEdit_std_substrate_index">
               <property name="text">
-               <string>2</string>
+               <string>0.1</string>
               </property>
              </widget>
             </item>
-            <item row="1" column="2">
-             <widget class="QLineEdit" name="lineEdit_std_layer_index">
-              <property name="text">
-               <string>2</string>
-              </property>
-             </widget>
-            </item>
-            <item row="4" column="2">
-             <widget class="QLineEdit" name="lineEdit_std_deposition_rate">
-              <property name="text">
-               <string>0.0001</string>
-              </property>
-             </widget>
-            </item>
-            <item row="3" column="0">
-             <widget class="QLabel" name="label_5">
-              <property name="text">
-               <string>Polarization</string>
-              </property>
-             </widget>
-            </item>
-            <item row="2" column="0">
-             <widget class="QLabel" name="label_4">
-              <property name="text">
-               <string>Angle of incidence</string>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="1">
-             <widget class="QLineEdit" name="lineEdit_layer_index">
-              <property name="text">
-               <string>1</string>
-              </property>
-             </widget>
-            </item>
-            <item row="2" column="1">
-             <widget class="QLineEdit" name="lineEdit_angle">
-              <property name="text">
-               <string>45</string>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="3">
+            <item row="2" column="3">
              <widget class="QLabel" name="label_layer_index">
               <property name="text">
                <string>&lt;no value&gt;</string>
               </property>
              </widget>
             </item>
-            <item row="3" column="3">
+            <item row="5" column="3">
              <widget class="QLabel" name="label_polarization">
               <property name="text">
                <string>&lt;no value&gt;</string>
               </property>
              </widget>
             </item>
-            <item row="5" column="2">
+            <item row="7" column="2">
              <widget class="QLineEdit" name="lineEdit_std_time_offset">
               <property name="text">
-               <string>10</string>
+               <string>1000</string>
               </property>
              </widget>
             </item>
-            <item row="5" column="3">
+            <item row="1" column="0">
+             <widget class="QLabel" name="label_9">
+              <property name="text">
+               <string>Substrate absorb.</string>
+              </property>
+             </widget>
+            </item>
+            <item row="7" column="3">
              <widget class="QLabel" name="label_time_offset">
               <property name="text">
                <string>&lt;no value&gt;</string>
               </property>
              </widget>
             </item>
-            <item row="2" column="2">
+            <item row="4" column="2">
              <widget class="QLineEdit" name="lineEdit_std_angle">
               <property name="text">
-               <string>20</string>
+               <string>5</string>
               </property>
              </widget>
             </item>
-            <item row="5" column="1">
+            <item row="7" column="1">
              <widget class="QLineEdit" name="lineEdit_time_offset">
               <property name="text">
                <string>0</string>
               </property>
              </widget>
             </item>
-            <item row="2" column="3">
+            <item row="4" column="3">
              <widget class="QLabel" name="label_angle">
               <property name="text">
                <string>&lt;no value&gt;</string>
               </property>
              </widget>
             </item>
-            <item row="3" column="1">
+            <item row="5" column="1">
              <widget class="QLineEdit" name="lineEdit_polarization">
               <property name="text">
-               <string>0</string>
+               <string>90</string>
               </property>
              </widget>
             </item>
@@ -247,14 +290,14 @@
               </property>
              </widget>
             </item>
-            <item row="4" column="0">
+            <item row="6" column="0">
              <widget class="QLabel" name="label_6">
               <property name="text">
                <string>Deposition rate</string>
               </property>
              </widget>
             </item>
-            <item row="4" column="3">
+            <item row="6" column="3">
              <widget class="QLabel" name="label_deposition_rate">
               <property name="text">
                <string>&lt;no value&gt;</string>
@@ -264,33 +307,82 @@
             <item row="0" column="1">
              <widget class="QLineEdit" name="lineEdit_substrate_index">
               <property name="text">
-               <string>1</string>
+               <string>1.2</string>
               </property>
              </widget>
             </item>
-            <item row="6" column="0">
+            <item row="8" column="0">
              <widget class="QLabel" name="label_8">
               <property name="text">
                <string>Global factor</string>
               </property>
              </widget>
             </item>
-            <item row="6" column="1">
+            <item row="8" column="1">
              <widget class="QLineEdit" name="lineEdit_global_factor">
               <property name="text">
                <string>1</string>
               </property>
              </widget>
             </item>
-            <item row="6" column="2">
+            <item row="8" column="2">
              <widget class="QLineEdit" name="lineEdit_std_global_factor">
               <property name="text">
-               <string>2</string>
+               <string>1</string>
               </property>
              </widget>
             </item>
-            <item row="6" column="3">
+            <item row="8" column="3">
              <widget class="QLabel" name="label_global_factor">
+              <property name="text">
+               <string>&lt;no value&gt;</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="1">
+             <widget class="QLineEdit" name="lineEdit_substrate_abs">
+              <property name="text">
+               <string>0</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="3">
+             <widget class="QLabel" name="label_substrate_abs">
+              <property name="text">
+               <string>&lt;no value&gt;</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="2">
+             <widget class="QLineEdit" name="lineEdit_std_substrate_abs">
+              <property name="text">
+               <string>0.01</string>
+              </property>
+             </widget>
+            </item>
+            <item row="3" column="0">
+             <widget class="QLabel" name="label_10">
+              <property name="text">
+               <string>Layer absorb.</string>
+              </property>
+             </widget>
+            </item>
+            <item row="3" column="1">
+             <widget class="QLineEdit" name="lineEdit_layer_abs">
+              <property name="text">
+               <string>0</string>
+              </property>
+             </widget>
+            </item>
+            <item row="3" column="2">
+             <widget class="QLineEdit" name="lineEdit_std_layer_abs">
+              <property name="text">
+               <string>0.01</string>
+              </property>
+             </widget>
+            </item>
+            <item row="3" column="3">
+             <widget class="QLabel" name="label_layer_abs">
               <property name="text">
                <string>&lt;no value&gt;</string>
               </property>

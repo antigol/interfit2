@@ -9,14 +9,47 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    _mus << ui->lineEdit_substrate_index << ui->lineEdit_layer_index
-         << ui->lineEdit_angle << ui->lineEdit_polarization
-         << ui->lineEdit_deposition_rate << ui->lineEdit_time_offset
+
+//    double substrate_index;
+//    double substrate_abs;
+//    double layer_index;
+//    double layer_abs;
+//    double angle;
+//    double polarization;
+//    double deposition_rate;
+//    double time_offset;
+//    double global_factor;
+
+    _mus << ui->lineEdit_substrate_index
+         << ui->lineEdit_substrate_abs
+         << ui->lineEdit_layer_index
+         << ui->lineEdit_layer_abs
+         << ui->lineEdit_angle
+         << ui->lineEdit_polarization
+         << ui->lineEdit_deposition_rate
+         << ui->lineEdit_time_offset
          << ui->lineEdit_global_factor;
-    _sigmas << ui->lineEdit_std_substrate_index << ui->lineEdit_std_layer_index
-            << ui->lineEdit_std_angle << ui->lineEdit_std_polarization
-            << ui->lineEdit_std_deposition_rate << ui->lineEdit_std_time_offset
+    _sigmas << ui->lineEdit_std_substrate_index
+            << ui->lineEdit_std_substrate_abs
+            << ui->lineEdit_std_layer_index
+            << ui->lineEdit_std_layer_abs
+            << ui->lineEdit_std_angle
+            << ui->lineEdit_std_polarization
+            << ui->lineEdit_std_deposition_rate
+            << ui->lineEdit_std_time_offset
             << ui->lineEdit_std_global_factor;
+    _labels << ui->label_substrate_index
+            << ui->label_substrate_abs
+            << ui->label_layer_index
+            << ui->label_layer_abs
+            << ui->label_angle
+            << ui->label_polarization
+            << ui->label_deposition_rate
+            << ui->label_time_offset
+            << ui->label_global_factor;
+    Q_ASSERT(_mus.size() == NPARAM);
+    Q_ASSERT(_sigmas.size() == NPARAM);
+    Q_ASSERT(_labels.size() == NPARAM);
 
     QSettings settings;
     for (int j = 0; j < NPARAM; ++j) {
@@ -34,6 +67,21 @@ MainWindow::MainWindow(QWidget *parent) :
     _metropolis = nullptr;
 
     startTimer(100);
+
+    QFile file("/home/mario/Documents/interfit2/example.txt");
+    file.open(QIODevice::ReadOnly);
+    QByteArray content = file.readAll();
+    file.close();
+
+    QList<QByteArray> lines = content.split('\n');
+
+    _pointlist->clear();
+    for (int i = 0; i < lines.size(); ++i) {
+        if (lines[i].contains('#')) continue;
+        QList<QByteArray> rows = lines[i].simplified().split(' ');
+        if (rows.size() != 2) continue;
+        _pointlist->append(QPointF(rows[0].toDouble(), rows[1].toDouble()));
+    }
 }
 
 MainWindow::~MainWindow()
@@ -50,14 +98,6 @@ MainWindow::~MainWindow()
     }
     delete _pointlist;
 }
-
-//    double substrate_index;
-//    double layer_index;
-//    double angle;
-//    double polarization;
-//    double deposition_rate;
-//    double time_offset;
-//    double global_factor;
 
 void MainWindow::start_metropolis()
 {
@@ -81,9 +121,11 @@ void MainWindow::start_metropolis()
             return;
         }
     }
+    _metropolis->init_walkers();
     _metropolis->data = _pointlist;
     _metropolis->start(QThread::IdlePriority);
     _scene->addFunction(_metropolis->ground_function());
+    _scene->addFunction(_metropolis->hot_function());
     connect(_metropolis, SIGNAL(evolved()), this, SLOT(onMetropolisEvolved()));
 }
 
@@ -127,16 +169,12 @@ void MainWindow::onMetropolisEvolved()
     if (_metropolis) {
         Function* f = _metropolis->ground_function();
 
-        QList<QLabel*> labels;
-        labels << ui->label_substrate_index << ui->label_layer_index
-               << ui->label_angle << ui->label_polarization
-               << ui->label_deposition_rate << ui->label_time_offset
-               << ui->label_global_factor;
-
         for (int j = 0; j < NPARAM; ++j) {
-            labels[j]->setText(QString::number(f->parameters_[j]));
+            _labels[j]->setText(QString::number(f->parameters_[j]));
         }
 
+        _metropolis->hot_function()->setPen(QPen(Qt::red));
+        f->setPen(QPen(Qt::blue));
         _scene->regraph();
     }
 }
@@ -157,9 +195,12 @@ qreal MainWindow::interpolate(const QList<QPointF> &xys, qreal x)
     return 0.0;
 }
 
-void MainWindow::timerEvent(QTimerEvent *event)
-{
-    Q_UNUSED(event);
+void MainWindow::on_pushButton_start_fit_clicked() {
+    start_metropolis();
+}
+
+void MainWindow::on_pushButton_stop_fit_clicked() {
+    stop_metropolis();
 }
 
 void MainWindow::on_actionOpen_triggered()
@@ -183,15 +224,6 @@ void MainWindow::on_actionOpen_triggered()
         _pointlist->append(QPointF(rows[0].toDouble(), rows[1].toDouble()));
     }
 }
-
-void MainWindow::on_pushButton_start_fit_clicked() {
-    start_metropolis();
-}
-
-void MainWindow::on_pushButton_stop_fit_clicked() {
-    stop_metropolis();
-}
-
 
 void MainWindow::on_actionSave_ratio_triggered()
 {
