@@ -1,0 +1,9 @@
+Test toute une nuit avec un échantillon silicium + verre en rotation (periode de rotation 2.352 secondes) 
+
+Le temps d'intégration était de 15 secondes
+Le temps entre chaque point de mesure était de 5 secondes
+
+Le ratio reflexion / référence contenait une oscillation de periode 43.913 secondes
+
+
+Cette ocillation de 44 secondes n'est pas visible quand le temps d'intégration et l'intevalle entre deux mesure est de 0.2 secondes.
