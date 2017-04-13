@@ -35,6 +35,9 @@ public:
 
     QMutex mutex;
 
+signals:
+    void evolved();
+
 private:
     virtual void run() override;
 

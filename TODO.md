@@ -1,4 +1,4 @@
 - range of fit for metrololis
 - set minimal temperature with respect to mean of data
-- put priors into settings
-- manage NaN
+- save data into file
+

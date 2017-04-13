@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QLineEdit>
 #include "lockin2/xygraph/xyscene.hh"
 #include "metropolis.h"
 
@@ -23,6 +24,7 @@ private slots:
 
     void onValuesRecieved();
     void onPriorChanged();
+    void onMetropolisEvolved();
 
     void on_actionOpen_triggered();
     void on_pushButton_start_fit_clicked();
@@ -34,6 +36,8 @@ private:
     void timerEvent(QTimerEvent* event) override;
 
     Ui::MainWindow *ui;
+    QList<QLineEdit*> _mus;
+    QList<QLineEdit*> _sigmas;
 
     XYScene* _scene;
     XYPointList* _pointlist;

@@ -24,7 +24,11 @@ qreal Function::y(qreal x)
 
     double c = std::cos(parameters.polarization * M_PI / 180.0);
     double s = std::sin(parameters.polarization * M_PI / 180.0);
-    return parameters.global_factor * (c*c * reflectanceP + s*s * reflectanceS);
+    double reflectance = parameters.global_factor * (c*c * reflectanceP + s*s * reflectanceS);
+
+    if (std::isnan(reflectance) || std::isinf(reflectance))
+        return -1.0;
+    return reflectance;
 }
 
 bool Function::domain(qreal x) const

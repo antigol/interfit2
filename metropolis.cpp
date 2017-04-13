@@ -11,8 +11,8 @@ std::mt19937& generator() {
 
 Metropolis::Metropolis()
 {
-    temperature0 = 1e-6;
-    factor_temperature = 1.7;
+    temperature0 = 1e-3;
+    factor_temperature = 1.3;
 
     // temperature_i = factor_temperature^i * temperature0
 
@@ -27,6 +27,7 @@ Metropolis::Metropolis()
 
         for (int i = 0; i < walkers.size(); ++i) {
             walkers[i].parameters_[j] = dist(generator());
+            Q_ASSERT(!std::isnan(walkers[i].parameters_[j]));
         }
     }
 }
@@ -62,7 +63,7 @@ Function *Metropolis::ground_function()
  *
  *
  * Parallel tempering
- * T = Temperature = 2 * sigma^2
+ * T = Temperature = 2 * sigma^2 * SIZE_XY
  * E = Energy = residues
  *
  * accept proba = exp((1/T_a - 1/T_b) * (E_b - E_a)
@@ -78,32 +79,48 @@ void Metropolis::run()
     }
 
     while (run_flag) {
-        msleep(5);
+        msleep(50);
         QTime time;
         time.start();
 
         // metropolis-hastings
-        for (int k = 0; k < 50; ++k) {
+        for (int k = 0; k < 10; ++k) {
             for (int i = 0; i < walkers.size(); ++i) {
                 Function candidate = walkers[i];
                 for (int j = 0; j < NPARAM; ++j) {
                     double r = 2.0 * std::generate_canonical<double, std::numeric_limits<double>::digits>(generator()) - 1.0;
                     r = r * r * r;
-                    candidate.parameters_[j] += 0.01 * r * sigma_[j];
+                    candidate.parameters_[j] += 0.001 * r * sigma_[j];
+                    Q_ASSERT(!std::isnan(candidate.parameters_[j]));
                 }
+
+                if (candidate.parameters.deposition_rate < 0.0) candidate.parameters.deposition_rate = 0.0;
+                if (candidate.parameters.global_factor < 0.0) candidate.parameters.global_factor = 0.0;
+                if (candidate.parameters.layer_index < 0.0) candidate.parameters.layer_index = 0.0;
+                if (candidate.parameters.substrate_index < 0.0) candidate.parameters.substrate_index = 0.0;
+                while (candidate.parameters.polarization < mu.polarization) candidate.parameters.polarization += 360.0;
+                candidate.parameters.polarization = std::fmod(candidate.parameters.polarization - mu.polarization + 180.0, 360.0) - 180.0 + mu.polarization;
 
                 // prior contribution
                 double x = 0.0;
                 double xc = 0.0;
                 for (int j = 0; j < NPARAM; ++j) {
                     double tmp = (walkers[i].parameters_[j] - mu_[j]) / sigma_[j];
-                    x -= tmp * tmp / 2.0;
+                    x += tmp * tmp / 2.0;
 
                     tmp = (candidate.parameters_[j] - mu_[j]) / sigma_[j];
-                    xc -= tmp * tmp / 2.0;
+                    xc += tmp * tmp / 2.0;
                 }
                 double Ec = residues(candidate);
-                double lnprob = (walkers_res[i] - Ec) / (std::pow(factor_temperature, i) * data->size() * temperature0) + x - xc;
+                double temp = std::pow(factor_temperature, i) * temperature0;
+                double lnprob = (walkers_res[i] - Ec) / temp + x - xc;
+
+                if (k == 0 && i == 0) {
+                    qDebug() << "Ec = " << Ec;
+                    qDebug() << "temp = " << temp;
+                    qDebug() << "xc = " << xc;
+                    qDebug() << "pol = " << candidate.parameters.polarization;
+                }
 
                 // rand < proba   <=> log(rand) < log(proba)
                 if (std::log(std::generate_canonical<double, std::numeric_limits<double>::digits>(generator())) < lnprob) {
@@ -113,13 +130,14 @@ void Metropolis::run()
             }
         }
 
-        for (int k = 0; k < 5; ++k) {
+        for (int k = 0; k < 2; ++k) {
             for (int i = 1; i < walkers.size(); ++i) {
                 double E1 = walkers_res[i-1];
                 double E0 = walkers_res[i];
 
-                // 1 / (q^i T0) - 1 / (q^(i-1) T0) = (1 - q) / (q^i T0)
-                double lnprob = (1.0 - factor_temperature) / (std::pow(factor_temperature, i) * data->size() * temperature0) * (E1 - E0);
+                // 1 / (q^i T0) - 1 / (q^(i-1) T0) = 1 / Ti - q / Ti = (1 - q) / Ti
+                double temp = std::pow(factor_temperature, i) * temperature0;
+                double lnprob = (1.0 - factor_temperature) / temp * (E1 - E0);
 
                 // rand < proba   <=> log(rand) < log(proba)
                 if (std::log(std::generate_canonical<double, std::numeric_limits<double>::digits>(generator())) < lnprob) {
@@ -131,7 +149,11 @@ void Metropolis::run()
             }
         }
 
-//        qDebug() << time.elapsed();
+        emit evolved();
+
+        qDebug() << time.elapsed() << "ms";
+        qDebug() << walkers[0].y(100);
+        qDebug() << walkers[0].domain(100);
     }
 }
 
@@ -141,11 +163,12 @@ double Metropolis::residues(Function &f)
 
     mutex.lock();
     for (int i = 0; i < data->size(); ++i) {
-        double err = 1000.0;
+        double fy = -2.0;
         if (f.domain(data->at(i).x()))
-            err = data->at(i).y() - f.y(data->at(i).x());
+            fy = f.y(data->at(i).x());
+        double err = data->at(i).y() - fy;
         residues += err * err;
     }
     mutex.unlock();
-    return residues;
+    return residues / double(data->size());
 }
