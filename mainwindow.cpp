@@ -67,7 +67,7 @@ MainWindow::MainWindow(QWidget *parent) :
     _pointlist.setLinePen(QPen(QBrush(Qt::white), 2.0));
     _scene->addScatterplot(&_pointlist);
 
-    connect(ui->lockin_sig, SIGNAL(newValues()), this, SLOT(onValuesRecieved()));
+    connect(ui->lockin_sig, SIGNAL(newValue()), this, SLOT(onValuesRecieved()));
 
     _metropolis = nullptr;
 }
