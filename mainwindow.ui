@@ -15,6 +15,18 @@
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="verticalLayout">
+    <property name="leftMargin">
+     <number>0</number>
+    </property>
+    <property name="topMargin">
+     <number>0</number>
+    </property>
+    <property name="rightMargin">
+     <number>0</number>
+    </property>
+    <property name="bottomMargin">
+     <number>0</number>
+    </property>
     <item>
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
@@ -187,6 +199,9 @@
             </item>
             <item row="7" column="0">
              <widget class="QLabel" name="label_7">
+              <property name="statusTip">
+               <string>Time in seconds during which the deposition already started</string>
+              </property>
               <property name="text">
                <string>Time offset</string>
               </property>
@@ -298,6 +313,9 @@
             </item>
             <item row="6" column="0">
              <widget class="QLabel" name="label_6">
+              <property name="statusTip">
+               <string>Rate in wavelength per seconds</string>
+              </property>
               <property name="text">
                <string>Deposition rate</string>
               </property>
@@ -319,6 +337,9 @@
             </item>
             <item row="8" column="0">
              <widget class="QLabel" name="label_8">
+              <property name="statusTip">
+               <string>[global factor] * [reflectance] + [global offset]</string>
+              </property>
               <property name="text">
                <string>Global factor</string>
               </property>
@@ -396,6 +417,9 @@
             </item>
             <item row="9" column="0">
              <widget class="QLabel" name="label_11">
+              <property name="statusTip">
+               <string>[global factor] * [reflectance] + [global offset]</string>
+              </property>
               <property name="text">
                <string>Global offset</string>
               </property>

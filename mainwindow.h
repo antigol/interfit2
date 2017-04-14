@@ -24,7 +24,6 @@ private slots:
     void stop_metropolis();
 
     void onValuesRecieved();
-    void onPriorChanged();
     void onMetropolisEvolved();
 
     void on_pushButton_start_fit_clicked();

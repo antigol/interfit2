@@ -119,6 +119,7 @@ void MainWindow::start_metropolis()
         _fits[i].p = _metropolis->walkers[i];
         double x = double(i) / double(_metropolis->walkers.size());
         _fits[i].setPen(QPen(QColor::fromHsvF((240.0 + x * 120.0) / 360.0, 1.0, 1.0)));
+        _fits[i].setVisible(true);
         _scene->addFunction(&_fits[i]);
     }
 
@@ -132,6 +133,11 @@ void MainWindow::stop_metropolis()
         _metropolis->wait(1000);
         delete _metropolis;
         _metropolis = nullptr;
+
+        for (int i = 1; i < _fits.size(); ++i) {
+            _fits[i].setVisible(false);
+        }
+        _scene->regraph();
     }
 }
 
@@ -152,11 +158,6 @@ void MainWindow::onValuesRecieved()
     if (_metropolis) _metropolis->mutex.unlock();
 
     _scene->regraph();
-}
-
-void MainWindow::onPriorChanged()
-{
-
 }
 
 void MainWindow::onMetropolisEvolved()
@@ -222,6 +223,9 @@ void MainWindow::on_actionOpen_triggered()
         if (rows.size() != 2) continue;
         _pointlist.append(QPointF(rows[0].toDouble(), rows[1].toDouble()));
     }
+
+    _scene->autoZoom();
+    _scene->regraph();
 }
 
 void MainWindow::on_actionSave_ratio_triggered()
