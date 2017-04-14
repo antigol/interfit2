@@ -17,25 +17,19 @@ public:
     virtual ~Metropolis();
 
     void init_walkers();
-    Function* ground_function();
-    Function* hot_function();
 
     // Data
     QList<QPointF>* data;
 
     // Priors
-    union {
-        Parameters mu;
-        double mu_[NPARAM];
-    };
-    union {
-        Parameters sigma;
-        double sigma_[NPARAM];
-    };
+    ParametersUnion mus;
+    ParametersUnion sigmas;
 
     bool run_flag;
 
     QMutex mutex;
+
+    QVector<ParametersUnion> walkers; // parallel tempering
 
 signals:
     void evolved();
@@ -43,9 +37,7 @@ signals:
 private:
     virtual void run() override;
 
-    double residues(Function &f);
-
-    QList<Function> walkers; // parallel tempering
+    double residues(const ParametersUnion &p);
 };
 
 #endif // METROPOLIS_H

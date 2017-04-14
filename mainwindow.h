@@ -41,7 +41,8 @@ private:
     QList<QLabel*> _labels;
 
     XYScene* _scene;
-    XYPointList* _pointlist;
+    XYPointList _pointlist;
+    QVector<Function> _fits;
 
     Metropolis* _metropolis;
 };

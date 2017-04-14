@@ -3,7 +3,7 @@
 
 #include "lockin2/xygraph/xyscene.hh"
 
-#define NPARAM 9
+#define NPARAM 10
 
 struct Parameters {
     double substrate_index;
@@ -15,6 +15,12 @@ struct Parameters {
     double deposition_rate;
     double time_offset;
     double global_factor;
+    double global_offset;
+};
+
+union ParametersUnion {
+    Parameters by_names;
+    double array[NPARAM];
 };
 
 class Function : public XYFunction
@@ -22,13 +28,12 @@ class Function : public XYFunction
 public:
     Function();
 
-    qreal y(qreal x) override;
-    bool domain(qreal x) const override;
+    qreal y(qreal time) override;
+    bool domain(qreal time) const override;
 
-    union {
-        Parameters parameters;
-        double parameters_[NPARAM];
-    };
+    ParametersUnion p;
 };
+
+double relfectance_in_function_of_time(const ParametersUnion& p, double time);
 
 #endif // FUNCTION_H
