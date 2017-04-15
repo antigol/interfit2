@@ -1,4 +1,4 @@
-#include "metropolis.h"
+#include "metropolis.hh"
 #include <random>
 #include <QDebug>
 #include <QTime>

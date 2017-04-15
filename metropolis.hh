@@ -2,7 +2,7 @@
 #define METROPOLIS_H
 
 #include <QObject>
-#include "function.h"
+#include "function.hh"
 #include <QList>
 #include <QPointF>
 #include <QThread>

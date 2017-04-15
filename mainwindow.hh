@@ -5,7 +5,7 @@
 #include <QLineEdit>
 #include <QLabel>
 #include "lockin2/xygraph/xyscene.hh"
-#include "metropolis.h"
+#include "metropolis.hh"
 
 namespace Ui {
 class MainWindow;

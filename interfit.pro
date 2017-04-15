@@ -19,9 +19,9 @@ SOURCES += \
     lockin2/src/audioutils.cc \
     lockin2/xygraph/xyview.cc \
     lockin2/xygraph/xyscene.cc \
-    function.cpp \
-    metropolis.cpp \
-    mainwindow.cpp
+    function.cc \
+    mainwindow.cc \
+    metropolis.cc
 
 FORMS += \
     lockin2/src/lockin_gui.ui \
@@ -34,6 +34,6 @@ HEADERS += \
     lockin2/src/audioutils.hh \
     lockin2/xygraph/xyview.hh \
     lockin2/xygraph/xyscene.hh \
-    function.h \
-    metropolis.h \
-    mainwindow.h
+    function.hh \
+    mainwindow.hh \
+    metropolis.hh

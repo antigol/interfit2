@@ -1,4 +1,4 @@
-#include "function.h"
+#include "function.hh"
 #include "thinfilm/thinfilm3.hh"
 
 Function::Function()
