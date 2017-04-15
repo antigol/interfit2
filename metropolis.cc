@@ -10,6 +10,10 @@ std::mt19937& generator() {
     return gen;
 }
 
+double randd() {
+    return std::generate_canonical<double, std::numeric_limits<double>::digits>(generator());
+}
+
 Metropolis::Metropolis()
 {
     walkers.resize(10);
@@ -89,17 +93,18 @@ void Metropolis::run()
         for (int k = 0; k < 10; ++k) {
             double temperature = temperature0 / factor_temperature;
             for (int i = 0; i < walkers.size(); ++i) {
-                temperature *= factor_temperature;
+                temperature *= factor_temperature; // temperature of the current walker
 
+                // Creation of a candidate from the current "position" (in the space of parameters)
                 ParametersUnion candidate = walkers[i];
                 for (int j = 0; j < NPARAM; ++j) {
-                    double r = 2.0 * std::generate_canonical<double, std::numeric_limits<double>::digits>(generator()) - 1.0;
+                    double r = 2.0 * randd() - 1.0;
                     r = r * r * r;
                     double a = std::pow(0.8, walkers.size() - i);
                     candidate.array[j] += a * r * sigmas.array[j];
-                    Q_ASSERT(!std::isnan(candidate.array[j]));
                 }
 
+                // These bounds checks probably violate the detailed balance but we dont care about the distribution, only the ground state matter
                 if (candidate.by_names.deposition_rate < 0.0) candidate.by_names.deposition_rate = 0.0;
                 if (candidate.by_names.global_factor < 0.0) candidate.by_names.global_factor = 0.0;
                 if (candidate.by_names.layer_index < 0.0) candidate.by_names.layer_index = 0.0;
@@ -108,6 +113,11 @@ void Metropolis::run()
                 if (candidate.by_names.substrate_abs < 0.0) candidate.by_names.substrate_abs = 0.0;
                 if (candidate.by_names.polarization < 0.0) candidate.by_names.polarization = 0.0;
                 if (candidate.by_names.polarization > 1.0) candidate.by_names.polarization = 1.0;
+
+                // Compute the probabilities ratio : P(candidate parameters | measure) / P(current parameters | measure)
+                // where P(parameters | measure) = P(measure | parameters)  P(parameters) / P(measure)
+                //  where P(measure | parameters) = Boltzmann distribution where energy is replaced by the MSE
+                //  where P(parameters) are the Priors (given by the user via the GUI)
 
                 // prior contribution
                 double x = 0.0;
@@ -123,11 +133,14 @@ void Metropolis::run()
                 }
 
                 // energy (residues) contribution
+                double E = walkers_res[i];
                 double Ec = residues(candidate);
-                double lnprob = (walkers_res[i] - Ec) / temperature + x - xc;
+
+                // log( P(candidate parameters | measure) / P(current parameters | measure) )
+                double lnprob = (E - Ec) / temperature + x - xc;
 
                 // rand < proba <=> log(rand) < log(proba)
-                if (std::log(std::generate_canonical<double, std::numeric_limits<double>::digits>(generator())) < lnprob) {
+                if (std::log(randd()) < lnprob) {
                     walkers[i] = candidate;
                     walkers_res[i] = Ec;
                 }
@@ -140,14 +153,23 @@ void Metropolis::run()
             for (int i = 1; i < walkers.size(); ++i) {
                 temperature *= factor_temperature;
 
-                double E1 = walkers_res[i-1];
-                double E0 = walkers_res[i];
+                // We have two systems with temperature T_a and T_b
+                // Each system has its own current micro-state S_a and S_b
+                // With respectively energies E_a and E_b
+                // Probability of this configuration = Exp[- E_a / T_a] * Exp[- E_b / T_b]  (divided by the partition function)
+                // Probability of the swaped configuration = Exp[- E_b / T_a] * Exp[- E_a / T_b]
+                // Swap probability = ratio of configurations probabilities = Exp[(E_b - E_a) (T_a - T_b) / (T_a T_b)]
+
+                // In this computation the Priors probabilities cancels out
+
+                double E_cold = walkers_res[i-1];
+                double E_hot = walkers_res[i];
 
                 // 1 / (q^i T0) - 1 / (q^(i-1) T0) = 1 / Ti - q / Ti = (1 - q) / Ti
-                double lnprob = (1.0 - factor_temperature) / temperature * (E0 - E1);
+                double lnprob = (1.0 - factor_temperature) / temperature * (E_hot - E_cold);
 
                 // rand < proba <=> log(rand) < log(proba)
-                if (std::log(std::generate_canonical<double, std::numeric_limits<double>::digits>(generator())) < lnprob) {
+                if (std::log(randd()) < lnprob) {
                     std::swap(walkers[i], walkers[i-1]);
                     std::swap(walkers_res[i], walkers_res[i-1]);
                 }
