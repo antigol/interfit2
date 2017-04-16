@@ -1,5 +1,5 @@
 #include "function.hh"
-#include "thinfilm/thinfilm3.hh"
+#include "thinfilm/thinfilm.hh"
 
 Function::Function()
 {
@@ -27,14 +27,12 @@ double relfectance_in_function_of_time(const ParametersUnion &p, double time)
 
     double reflectanceP = 0.0;
     double reflectanceS = 0.0;
-    double transmittanceP = 0.0;
-    double transmittanceS = 0.0;
 
     std::vector<thinfilm::Layer> layers(1);
     layers[0].refractiveIndex = thinfilm::complex(p.by_names.layer_index, p.by_names.layer_abs);
     layers[0].thickness = thickness;
 
-    thinfilm::compute(cosTheta, 1.0, thinfilm::complex(p.by_names.substrate_index, p.by_names.substrate_abs), layers, &reflectanceP, &reflectanceS, &transmittanceP, &transmittanceS);
+    thinfilm::reflectance(cosTheta, 1.0, thinfilm::complex(p.by_names.substrate_index, p.by_names.substrate_abs), layers, &reflectanceP, &reflectanceS);
 
     double reflectance = p.by_names.polarization * reflectanceP + (1.0 - p.by_names.polarization) * reflectanceS;
 

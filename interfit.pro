@@ -36,4 +36,5 @@ HEADERS += \
     lockin2/xygraph/xyscene.hh \
     function.hh \
     mainwindow.hh \
-    metropolis.hh
+    metropolis.hh \
+    thinfilm/thinfilm.hh
