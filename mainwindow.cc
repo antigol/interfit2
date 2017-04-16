@@ -110,6 +110,8 @@ void MainWindow::start_metropolis()
     }
     _metropolis->init_walkers();
     _metropolis->data = &_pointlist;
+    _metropolis->time_from = ui->lineEdit_from->text().toDouble();
+    _metropolis->time_to = ui->lineEdit_to->text().toDouble();
     _metropolis->start(QThread::IdlePriority);
 
     _scene->getFunctionsList().clear();
