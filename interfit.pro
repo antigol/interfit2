@@ -19,6 +19,7 @@ SOURCES += \
     lockin2/src/audioutils.cc \
     lockin2/xygraph/xyview.cc \
     lockin2/xygraph/xyscene.cc \
+    lockin2/xygraph/xygraph.cc \
     function.cc \
     mainwindow.cc \
     metropolis.cc
@@ -34,6 +35,7 @@ HEADERS += \
     lockin2/src/audioutils.hh \
     lockin2/xygraph/xyview.hh \
     lockin2/xygraph/xyscene.hh \
+    lockin2/xygraph/xygraph.hh \
     function.hh \
     mainwindow.hh \
     metropolis.hh \

@@ -4,7 +4,7 @@
 #include <QMainWindow>
 #include <QLineEdit>
 #include <QLabel>
-#include "lockin2/xygraph/xyscene.hh"
+#include "lockin2/xygraph/xygraph.hh"
 #include "metropolis.hh"
 
 namespace Ui {
@@ -39,8 +39,7 @@ private:
     QList<QLineEdit*> _sigmas;
     QList<QLabel*> _labels;
 
-    XYScene* _scene;
-    XYPointList _pointlist;
+    XY::PointList _pointlist;
     QVector<Function> _fits;
 
     Metropolis* _metropolis;

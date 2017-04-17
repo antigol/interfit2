@@ -1,7 +1,7 @@
 #ifndef FUNCTION_H
 #define FUNCTION_H
 
-#include "lockin2/xygraph/xyscene.hh"
+#include "lockin2/xygraph/xygraph.hh"
 
 #define NPARAM 10
 
@@ -23,7 +23,7 @@ union ParametersUnion {
     double array[NPARAM];
 };
 
-class Function : public XYFunction
+class Function : public XY::Function
 {
 public:
     Function();

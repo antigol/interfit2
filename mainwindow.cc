@@ -61,11 +61,9 @@ MainWindow::MainWindow(QWidget *parent) :
         _sigmas[j]->setText(settings.value(QString("sigma %1").arg(j), _sigmas[j]->text()).toString());
     }
 
-    _scene = new XYScene(this);
-    ui->graphicsView->setScene(_scene);
-    _pointlist.setRadius(0.0);
-    _pointlist.setLinePen(QPen(QBrush(Qt::white), 2.0));
-    _scene->addScatterplot(&_pointlist);
+    _pointlist.dotRadius = 0.0;
+    _pointlist.linePen = QPen(QBrush(Qt::white), 2.0);
+    ui->graph->addPointList(&_pointlist);
 
     connect(ui->lockin_sig, SIGNAL(newValue()), this, SLOT(onValuesRecieved()));
 
@@ -112,15 +110,14 @@ void MainWindow::start_metropolis()
     _metropolis->data = &_pointlist;
     _metropolis->start(QThread::IdlePriority);
 
-    _scene->getFunctionsList().clear();
+    ui->graph->functions.clear();
     _fits.resize(_metropolis->walkers.size());
 
     for (int i = 0; i < _metropolis->walkers.size(); ++i) {
         _fits[i].p = _metropolis->walkers[i];
         double x = double(i) / double(_metropolis->walkers.size());
-        _fits[i].setPen(QPen(QColor::fromHsvF((240.0 + x * 120.0) / 360.0, 1.0, 1.0)));
-        _fits[i].setVisible(true);
-        _scene->addFunction(&_fits[i]);
+        _fits[i].pen = QPen(QColor::fromHsvF((240.0 + x * 120.0) / 360.0, 1.0, 1.0));
+        ui->graph->addFunction(&_fits[i]);
     }
 
     connect(_metropolis, SIGNAL(evolved()), this, SLOT(onMetropolisEvolved()));
@@ -134,10 +131,9 @@ void MainWindow::stop_metropolis()
         delete _metropolis;
         _metropolis = nullptr;
 
-        for (int i = 1; i < _fits.size(); ++i) {
-            _fits[i].setVisible(false);
-        }
-        _scene->regraph();
+        ui->graph->functions.clear();
+        ui->graph->addFunction(&_fits[0]);
+        ui->graph->update();
     }
 }
 
@@ -157,7 +153,7 @@ void MainWindow::onValuesRecieved()
     }
     if (_metropolis) _metropolis->mutex.unlock();
 
-    _scene->regraph();
+    ui->graph->update();
 }
 
 void MainWindow::onMetropolisEvolved()
@@ -171,7 +167,7 @@ void MainWindow::onMetropolisEvolved()
             _fits[i].p = _metropolis->walkers[i];
         }
 
-        _scene->regraph();
+        ui->graph->update();
     }
 }
 
@@ -224,8 +220,8 @@ void MainWindow::on_actionOpen_triggered()
         _pointlist.append(QPointF(rows[0].toDouble(), rows[1].toDouble()));
     }
 
-    _scene->autoZoom();
-    _scene->regraph();
+    ui->graph->autoZoom();
+    ui->graph->update();
 }
 
 void MainWindow::on_actionSave_ratio_triggered()

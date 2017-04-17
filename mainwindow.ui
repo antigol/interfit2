@@ -105,7 +105,7 @@
        </attribute>
        <layout class="QVBoxLayout" name="verticalLayout_5">
         <item>
-         <widget class="XYView" name="graphicsView"/>
+         <widget class="XY::Graph" name="graph"/>
         </item>
         <item>
          <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -494,9 +494,9 @@
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>XYView</class>
-   <extends>QGraphicsView</extends>
-   <header>lockin2/xygraph/xyview.hh</header>
+   <class>XY::Graph</class>
+   <extends>QOpenGLWidget</extends>
+   <header>xygraph/xygraph.hh</header>
   </customwidget>
  </customwidgets>
  <resources/>
