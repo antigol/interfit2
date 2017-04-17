@@ -185,7 +185,12 @@ double Metropolis::residues(const ParametersUnion &p)
     QMutexLocker lock(&mutex);
 
     double residues = 0.0;
-    for (int i = 0; i < data->size(); ++i) {
+    int i = 0;
+    for (; i < data->size(); ++i) {
+        if (data->at(i).x() >= time_from) break;
+    }
+    for (; i < data->size(); ++i) {
+        if (data->at(i).x() > time_to) break;
         double fy = relfectance_in_function_of_time(p, data->at(i).x());
         double err = data->at(i).y() - fy;
         residues += err * err;

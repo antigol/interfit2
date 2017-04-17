@@ -20,6 +20,8 @@ public:
 
     // Data
     QList<QPointF>* data;
+    double time_from;
+    double time_to;
 
     // Priors
     ParametersUnion mus;
