@@ -145,7 +145,7 @@ void MainWindow::onValuesRecieved()
     const QList<QPointF>& sig = ui->lockin_sig->values();
     const QList<QPointF>& ref = ui->lockin_ref->values();
 
-    qreal offset = ui->lockin_ref->start_time().msecsTo(ui->lockin_sig->start_time()) / 1000.0;
+    qreal offset = qreal(ui->lockin_ref->start_time().msecsTo(ui->lockin_sig->start_time())) / 1000.0;
 
     if (_metropolis) _metropolis->mutex.lock();
     _pointlist.clear();
@@ -161,7 +161,6 @@ void MainWindow::onValuesRecieved()
             } // j is the last such that ref[j].x() < x_ref
 
             qreal y_ref = ref[j].y();
-            qDebug() << i << "  " << j;
             if (j + 1 < ref.size() && ref[j].x() < x_ref) {
                 y_ref = ref[j].y() + (x_ref - ref[j].x()) / (ref[j+1].x() - ref[j].x()) * (ref[j+1].y() - ref[j].y());
             }
