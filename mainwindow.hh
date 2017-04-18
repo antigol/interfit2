@@ -32,8 +32,6 @@ private slots:
     void on_actionSave_ratio_triggered();
 
 private:
-    qreal interpolate(const QList<QPointF>& xys, qreal x);
-
     Ui::MainWindow *ui;
     QList<QLineEdit*> _mus;
     QList<QLineEdit*> _sigmas;

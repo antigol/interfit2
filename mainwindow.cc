@@ -3,6 +3,7 @@
 #include <QFileDialog>
 #include <QDebug>
 #include <QSettings>
+#include <algorithm>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -149,9 +150,24 @@ void MainWindow::onValuesRecieved()
     if (_metropolis) _metropolis->mutex.lock();
     _pointlist.clear();
 
-    for (int i = 0; i < sig.size(); ++i) {
-        qreal interp = interpolate(ref, sig[i].x() + offset);
-        _pointlist.append(QPointF(sig[i].x(), sig[i].y() / interp));
+    if (!ref.isEmpty()) {
+        int j = 0;
+
+        for (int i = 0; i < sig.size(); ++i) {
+            // interpolate ref
+            qreal x_ref = sig[i].x() + offset;
+            while (j + 1 < ref.size() && ref[j + 1].x() < x_ref) {
+                j++;
+            } // j is the last such that ref[j].x() < x_ref
+
+            qreal y_ref = ref[j].y();
+            qDebug() << i << "  " << j;
+            if (j + 1 < ref.size() && ref[j].x() < x_ref) {
+                y_ref = ref[j].y() + (x_ref - ref[j].x()) / (ref[j+1].x() - ref[j].x()) * (ref[j+1].y() - ref[j].y());
+            }
+
+            _pointlist.append(QPointF(sig[i].x(), sig[i].y() / y_ref));
+        }
     }
     if (_metropolis) _metropolis->mutex.unlock();
 
@@ -171,22 +187,6 @@ void MainWindow::onMetropolisEvolved()
 
         ui->graph->update();
     }
-}
-
-qreal MainWindow::interpolate(const QList<QPointF> &xys, qreal x)
-{
-    // assume xys ordered in x's
-
-    if (xys.empty()) return 0.0;
-    if (x <= xys.first().x()) return xys.first().y();
-    if (x >= xys.last().x()) return xys.last().y();
-
-    for (int i = 1; i < xys.size(); ++i) {
-        if (x >= xys[i-1].x() && x <= xys[i].x()) {
-            return xys[i-1].y() + (x - xys[i-1].x()) / (xys[i].x() - xys[i-1].x()) * (xys[i].y() - xys[i-1].y());
-        }
-    }
-    return 0.0;
 }
 
 void MainWindow::on_pushButton_start_fit_clicked() {
