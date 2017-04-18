@@ -170,6 +170,9 @@
               </item>
               <item>
                <widget class="QLineEdit" name="lineEdit_from">
+                <property name="statusTip">
+                 <string>time from which the measure is used for the fit (in seconds)</string>
+                </property>
                 <property name="text">
                  <string>0</string>
                 </property>
@@ -184,6 +187,9 @@
               </item>
               <item>
                <widget class="QLineEdit" name="lineEdit_to">
+                <property name="statusTip">
+                 <string>time until which the measure is used for the fit (in seconds)</string>
+                </property>
                 <property name="text">
                  <string>1e15</string>
                 </property>
@@ -220,7 +226,7 @@
               <item row="4" column="0">
                <widget class="QLabel" name="label_4">
                 <property name="statusTip">
-                 <string>0 mean normal and 90 mean grazing</string>
+                 <string>0 = normal and 90 = grazing</string>
                 </property>
                 <property name="text">
                  <string>Angle of incidence</string>
@@ -543,7 +549,7 @@
   <customwidget>
    <class>LockinGui</class>
    <extends>QWidget</extends>
-   <header>lockin2/src/lockin_gui.hh</header>
+   <header>lockin2/lockin_gui.hh</header>
    <container>1</container>
   </customwidget>
   <customwidget>

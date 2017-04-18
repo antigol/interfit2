@@ -63,7 +63,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     _pointlist.dotRadius = 0.0;
     _pointlist.linePen = QPen(QBrush(Qt::white), 2.0);
-    ui->graph->addPointList(&_pointlist);
+    ui->graph->pointLists << &_pointlist;
 
     connect(ui->lockin_sig, SIGNAL(newValue()), this, SLOT(onValuesRecieved()));
 
@@ -119,7 +119,7 @@ void MainWindow::start_metropolis()
         _fits[i].p = _metropolis->walkers[i];
         double x = double(i) / double(_metropolis->walkers.size());
         _fits[i].pen = QPen(QColor::fromHsvF((240.0 + x * 120.0) / 360.0, 1.0, 1.0));
-        ui->graph->addFunction(&_fits[i]);
+        ui->graph->functions << &_fits[i];
     }
 
     connect(_metropolis, SIGNAL(evolved()), this, SLOT(onMetropolisEvolved()));
@@ -134,7 +134,7 @@ void MainWindow::stop_metropolis()
         _metropolis = nullptr;
 
         ui->graph->functions.clear();
-        ui->graph->addFunction(&_fits[0]);
+        ui->graph->functions << &_fits[0];
         ui->graph->update();
     }
 }
