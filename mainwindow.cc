@@ -148,26 +148,37 @@ void MainWindow::onValuesRecieved()
     qreal offset = qreal(ui->lockin_ref->start_time().msecsTo(ui->lockin_sig->start_time())) / 1000.0;
 
     if (_metropolis) _metropolis->mutex.lock();
-    _pointlist.clear();
+    if (sig.size() < _pointlist.size()) {
+        _pointlist.clear();
+    }
 
     if (!ref.isEmpty()) {
         int j = 0;
 
-        for (int i = 0; i < sig.size(); ++i) {
+        for (int i = _pointlist.size(); i < sig.size(); ++i) {
             // interpolate ref
             qreal x_ref = sig[i].x() + offset;
+            while (j + 1 < ref.size() && ref[(j + ref.size()) / 2].x() < x_ref) {
+                j = (j + ref.size()) / 2;
+            }
             while (j + 1 < ref.size() && ref[j + 1].x() < x_ref) {
-                j++;
+                j = j + 1;
             } // j is the last such that ref[j].x() < x_ref
 
             qreal y_ref = ref[j].y();
             if (j + 1 < ref.size() && ref[j].x() < x_ref) {
                 y_ref = ref[j].y() + (x_ref - ref[j].x()) / (ref[j+1].x() - ref[j].x()) * (ref[j+1].y() - ref[j].y());
+                _pointlist.append(QPointF(sig[i].x(), sig[i].y() / y_ref));
+            } else {
+                break;
             }
-
-            _pointlist.append(QPointF(sig[i].x(), sig[i].y() / y_ref));
         }
     }
+
+    if (!_pointlist.empty() && ui->graph->xmax() < _pointlist.last().x() && ui->graph->xmax() + 0.1 * ui->graph->xwidth() > _pointlist.last().x()) {
+        ui->graph->setxmax(ui->graph->xmax() + 0.1 * ui->graph->xwidth());
+    }
+
     if (_metropolis) _metropolis->mutex.unlock();
 
     ui->graph->update();
