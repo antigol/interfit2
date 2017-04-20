@@ -1,21 +1,5 @@
-#include "function.hh"
+#include "model.hh"
 #include "thinfilm/thinfilm.hh"
-
-Function::Function()
-{
-
-}
-
-qreal Function::y(qreal time)
-{
-    return relfectance_in_function_of_time(p, time);
-}
-
-bool Function::domain(qreal time) const
-{
-    double thickness = p.by_names.deposition_rate * (time + p.by_names.time_offset);
-    return thickness >= 0;
-}
 
 double relfectance_in_function_of_time(const ParametersUnion &p, double time)
 {
@@ -28,9 +12,12 @@ double relfectance_in_function_of_time(const ParametersUnion &p, double time)
     double reflectanceP = 0.0;
     double reflectanceS = 0.0;
 
-    std::vector<thinfilm::Layer> layers(1);
-    layers[0].refractiveIndex = thinfilm::complex(p.by_names.layer_index, p.by_names.layer_abs);
+    std::vector<thinfilm::Layer> layers(2);
+    layers[0].refractiveIndex = thinfilm::complex(p.by_names.layer2_index, p.by_names.layer2_abs);
     layers[0].thickness = thickness;
+
+    layers[1].refractiveIndex = thinfilm::complex(p.by_names.intlayer_index, p.by_names.intlayer_abs);
+    layers[1].thickness = p.by_names.intlayer_thickness;
 
     thinfilm::reflectance(cosTheta, 1.0, thinfilm::complex(p.by_names.substrate_index, p.by_names.substrate_abs), layers, &reflectanceP, &reflectanceS);
 

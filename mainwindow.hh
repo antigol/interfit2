@@ -37,6 +37,15 @@ private:
     QList<QLineEdit*> _sigmas;
     QList<QLabel*> _labels;
 
+    class Function : public XY::Function
+    {
+    public:
+        qreal y(qreal time) override;
+        bool domain(qreal time) const override;
+
+        ParametersUnion p;
+    };
+
     XY::PointList _pointlist;
     QVector<Function> _fits;
 

@@ -13,16 +13,23 @@ MainWindow::MainWindow(QWidget *parent) :
 
 //    double substrate_index;
 //    double substrate_abs;
-//    double layer_index;
-//    double layer_abs;
+//    double layer1_index;
+//    double layer1_abs;
+//    double layer1_thickness;
+//    double layer2_index;
+//    double layer2_abs;
 //    double angle;
 //    double polarization;
 //    double deposition_rate;
 //    double time_offset;
 //    double global_factor;
+//    double global_offset;
 
     _mus << ui->lineEdit_substrate_index
          << ui->lineEdit_substrate_abs
+         << ui->lineEdit_layer1_index
+         << ui->lineEdit_layer1_abs
+         << ui->lineEdit_layer1_thickness
          << ui->lineEdit_layer_index
          << ui->lineEdit_layer_abs
          << ui->lineEdit_angle
@@ -33,6 +40,9 @@ MainWindow::MainWindow(QWidget *parent) :
          << ui->lineEdit_global_offset;
     _sigmas << ui->lineEdit_std_substrate_index
             << ui->lineEdit_std_substrate_abs
+            << ui->lineEdit_std_layer1_index
+            << ui->lineEdit_std_layer1_abs
+            << ui->lineEdit_std_layer1_thickness
             << ui->lineEdit_std_layer_index
             << ui->lineEdit_std_layer_abs
             << ui->lineEdit_std_angle
@@ -43,6 +53,9 @@ MainWindow::MainWindow(QWidget *parent) :
             << ui->lineEdit_std_global_offset;
     _labels << ui->label_substrate_index
             << ui->label_substrate_abs
+            << ui->label_layer1_index
+            << ui->label_layer1_abs
+            << ui->label_layer1_thickness
             << ui->label_layer_index
             << ui->label_layer_abs
             << ui->label_angle
@@ -255,4 +268,15 @@ void MainWindow::on_actionSave_ratio_triggered()
 
     file.write(content);
     file.close();
+}
+
+qreal MainWindow::Function::y(qreal time)
+{
+    return relfectance_in_function_of_time(p, time);
+}
+
+bool MainWindow::Function::domain(qreal time) const
+{
+    double thickness = p.by_names.deposition_rate * (time + p.by_names.time_offset);
+    return thickness >= 0;
 }

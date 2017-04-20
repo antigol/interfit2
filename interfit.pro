@@ -14,13 +14,14 @@ INCLUDEPATH += . lockin2
 include(lockin2/lockin.pri)
 
 SOURCES += main.cc \
-    function.cc \
     mainwindow.cc \
-    metropolis.cc
+    metropolis.cc \
+    model.cc
 
 FORMS += mainwindow.ui
 
-HEADERS += function.hh \
+HEADERS += \
     mainwindow.hh \
     metropolis.hh \
-    thinfilm/thinfilm.hh
+    thinfilm/thinfilm.hh \
+    model.hh

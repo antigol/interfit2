@@ -105,12 +105,15 @@ void Metropolis::run()
                 }
 
                 // These bounds checks probably violate the detailed balance but we dont care about the distribution, only the ground state matter
-                if (candidate.by_names.deposition_rate < 0.0) candidate.by_names.deposition_rate = 0.0;
-                if (candidate.by_names.global_factor < 0.0) candidate.by_names.global_factor = 0.0;
-                if (candidate.by_names.layer_index < 0.0) candidate.by_names.layer_index = 0.0;
-                if (candidate.by_names.layer_abs < 0.0) candidate.by_names.layer_abs = 0.0;
                 if (candidate.by_names.substrate_index < 0.0) candidate.by_names.substrate_index = 0.0;
                 if (candidate.by_names.substrate_abs < 0.0) candidate.by_names.substrate_abs = 0.0;
+                if (candidate.by_names.intlayer_index < 0.0) candidate.by_names.intlayer_index = 0.0;
+                if (candidate.by_names.intlayer_abs < 0.0) candidate.by_names.intlayer_abs = 0.0;
+                if (candidate.by_names.intlayer_thickness < 0.0) candidate.by_names.intlayer_thickness = 0.0;
+                if (candidate.by_names.layer2_index < 0.0) candidate.by_names.layer2_index = 0.0;
+                if (candidate.by_names.layer2_abs < 0.0) candidate.by_names.layer2_abs = 0.0;
+                if (candidate.by_names.deposition_rate < 0.0) candidate.by_names.deposition_rate = 0.0;
+                if (candidate.by_names.global_factor < 0.0) candidate.by_names.global_factor = 0.0;
                 if (candidate.by_names.polarization < 0.0) candidate.by_names.polarization = 0.0;
                 if (candidate.by_names.polarization > 1.0) candidate.by_names.polarization = 1.0;
 

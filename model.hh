@@ -3,17 +3,25 @@
 
 #include "lockin2/xygraph/xygraph.hh"
 
-#define NPARAM 10
+#define NPARAM 13
 
 struct Parameters {
+    // substrate
     double substrate_index;
     double substrate_abs;
-    double layer_index;
-    double layer_abs;
+    // intermediate layer
+    double intlayer_index;
+    double intlayer_abs;
+    double intlayer_thickness;
+    // deposition layer
+    double layer2_index;
+    double layer2_abs;
+    // geometry
     double angle;
-    double polarization;
-    double deposition_rate;
-    double time_offset;
+    double polarization;    
+    // scale and shift factors
+    double deposition_rate; // deposition rate in wavelength / seconds
+    double time_offset; // in seconds
     double global_factor;
     double global_offset;
 };
@@ -21,17 +29,6 @@ struct Parameters {
 union ParametersUnion {
     Parameters by_names;
     double array[NPARAM];
-};
-
-class Function : public XY::Function
-{
-public:
-    Function();
-
-    qreal y(qreal time) override;
-    bool domain(qreal time) const override;
-
-    ParametersUnion p;
 };
 
 double relfectance_in_function_of_time(const ParametersUnion& p, double time);
