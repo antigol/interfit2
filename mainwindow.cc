@@ -74,12 +74,17 @@ MainWindow::MainWindow(QWidget *parent) :
         _mus[j]->setText(settings.value(QString("mu %1").arg(j), _mus[j]->text()).toString());
         _sigmas[j]->setText(settings.value(QString("sigma %1").arg(j), _sigmas[j]->text()).toString());
     }
+    initial_guess_changed();
 
     _pointlist.dotRadius = 0.0;
     _pointlist.linePen = QPen(QBrush(Qt::white), 2.0);
     ui->graph->pointLists << &_pointlist;
 
     connect(ui->lockin_sig, SIGNAL(newValue()), this, SLOT(onValuesRecieved()));
+
+    for (int j = 0; j < NPARAM; ++j) {
+        connect(_mus[j], SIGNAL(textChanged(QString)), this, SLOT(initial_guess_changed()));
+    }
 
     _metropolis = nullptr;
 }
@@ -96,6 +101,22 @@ MainWindow::~MainWindow()
     if (_metropolis) {
         delete _metropolis;
     }
+}
+
+void MainWindow::initial_guess_changed()
+{
+    for (int j = 0; j < NPARAM; ++j) {
+        bool ok;
+        _guess.p.array[j] = _mus[j]->text().toDouble(&ok);
+        if (!ok) {
+            return;
+        }
+    }
+    _guess.pen = QPen(Qt::yellow);
+    if (!ui->graph->functions.contains(&_guess)) {
+        ui->graph->functions << &_guess;
+    }
+    ui->graph->update();
 }
 
 void MainWindow::start_metropolis()

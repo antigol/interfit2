@@ -20,6 +20,8 @@ public:
     ~MainWindow();
 
 private slots:
+    void initial_guess_changed();
+
     void start_metropolis();
     void stop_metropolis();
 
@@ -48,6 +50,7 @@ private:
 
     XY::PointList _pointlist;
     QVector<Function> _fits;
+    Function _guess;
 
     Metropolis* _metropolis;
 };
